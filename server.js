@@ -11,7 +11,7 @@ const io = socketIo(server, {
   },
 });
 
-app.use('',(req,res,next)=>{
+app.use('/',(req,res,next)=>{
 res.send("Hello ")
 })
 
