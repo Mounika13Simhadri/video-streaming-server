@@ -4,11 +4,20 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
+const cors = require('cors');
+
+app.use(cors({
+  origin: '*', 
+  methods: '*', 
+  allowedHeaders: '*', 
+  credentials: true, 
+}));
 const io = socketIo(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+    origin: '*', 
+  methods: '*', 
+  allowedHeaders: '*', 
+  credentials: true,   },
 });
 
 const employeeSockets = {};
@@ -49,7 +58,13 @@ io.on('connection', (socket) => {
       io.to(employeeSockets[employeeId]).emit('admin-disconnected');
     }
   });
-
+socket.on('switch-stream', (streamType) => {
+  const employeeId = adminSockets[socket.id];
+  if (employeeId && employeeSockets[employeeId]) {
+    console.log(`Switching stream to ${streamType} for ${employeeId}`);
+    io.to(employeeSockets[employeeId]).emit('switch-stream', streamType);
+  }
+});
   
   
 });
@@ -57,3 +72,4 @@ io.on('connection', (socket) => {
 server.listen(4000, () => {
   console.log('Server running on http://localhost:4000');
 });
+module.exports = server;
